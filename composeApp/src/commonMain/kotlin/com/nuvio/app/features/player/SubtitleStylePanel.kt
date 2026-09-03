@@ -175,7 +175,7 @@ fun SubtitleStylePanel(
             SubtitleStyleStepper(
                 value = style.bottomOffset.toString(),
                 onDecrease = {
-                    onStyleChanged(style.copy(bottomOffset = (style.bottomOffset - 5).coerceAtLeast(0)))
+                    onStyleChanged(style.copy(bottomOffset = (style.bottomOffset - 5).coerceAtLeast(-70)))
                 },
                 onIncrease = {
                     onStyleChanged(style.copy(bottomOffset = (style.bottomOffset + 5).coerceAtMost(200)))
