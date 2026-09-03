@@ -994,7 +994,7 @@ private fun PlayerScreenRuntime.handlePlayerControlsEvent(type: String, value: D
         }
         "subtitleBottomOffsetDelta" -> {
             PlayerSettingsRepository.setSubtitleStyle(
-                subtitleStyle.copy(bottomOffset = (subtitleStyle.bottomOffset + value.toInt()).coerceIn(-70, 200)),
+                subtitleStyle.copy(bottomOffset = (subtitleStyle.bottomOffset + value.toInt()).coerceIn(-40, 200)),
             )
         }
         "subtitleTextColor" -> {
