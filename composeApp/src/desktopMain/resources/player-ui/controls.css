@@ -2181,6 +2181,10 @@ button:disabled {
   line-height: 1;
 }
 
+.subtitle-delay-large-step {
+  font-size: 15px;
+}
+
 .swatch-row {
   display: flex;
   width: 100%;

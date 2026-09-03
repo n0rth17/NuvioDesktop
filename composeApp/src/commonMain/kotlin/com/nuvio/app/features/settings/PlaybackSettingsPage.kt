@@ -577,7 +577,7 @@ private fun PlaybackSettingsSection(
                     title = stringResource(Res.string.settings_playback_subtitle_vertical_offset),
                     value = subtitleStyle.bottomOffset,
                     valueText = subtitleStyle.bottomOffset.toString(),
-                    valueRange = 0..200,
+                    valueRange = -70..200,
                     step = 5,
                     isTablet = isTablet,
                     enabled = subtitleRenderingEnabled,

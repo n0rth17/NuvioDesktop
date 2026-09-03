@@ -89,9 +89,11 @@ const customSubtitleStyleLabel = document.getElementById("customSubtitleStyleLab
 const customSubtitleStyleToggle = document.getElementById("customSubtitleStyleToggle");
 const customSubtitleStyleControls = document.getElementById("customSubtitleStyleControls");
 const subtitleDelayLabel = document.getElementById("subtitleDelayLabel");
+const subtitleDelayMinusLarge = document.getElementById("subtitleDelayMinusLarge");
 const subtitleDelayMinus = document.getElementById("subtitleDelayMinus");
 const subtitleDelayValue = document.getElementById("subtitleDelayValue");
 const subtitleDelayPlus = document.getElementById("subtitleDelayPlus");
+const subtitleDelayPlusLarge = document.getElementById("subtitleDelayPlusLarge");
 const subtitleDelayReset = document.getElementById("subtitleDelayReset");
 const autoSyncLabel = document.getElementById("autoSyncLabel");
 const autoSyncReload = document.getElementById("autoSyncReload");
@@ -2649,14 +2651,26 @@ modalElements.forEach(modal => {
   });
 });
 
+subtitleDelayMinusLarge.addEventListener("click", event => {
+  event.stopPropagation();
+  send("subtitleDelayDelta", -500);
+});
+
 subtitleDelayMinus.addEventListener("click", event => {
   event.stopPropagation();
   send("subtitleDelayDelta", -100);
 });
+
 subtitleDelayPlus.addEventListener("click", event => {
   event.stopPropagation();
   send("subtitleDelayDelta", 100);
 });
+
+subtitleDelayPlusLarge.addEventListener("click", event => {
+  event.stopPropagation();
+  send("subtitleDelayDelta", 500);
+});
+
 subtitleDelayReset.addEventListener("click", event => {
   event.stopPropagation();
   send("subtitleDelayReset", 0);

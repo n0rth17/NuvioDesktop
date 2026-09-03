@@ -260,10 +260,14 @@
                     <span class="style-label" id="subtitleDelayLabel">Subtitle Delay</span>
                     <div class="style-control-row">
                       <div class="stepper">
-                        <button class="round-step" id="subtitleDelayMinus" type="button">-</button>
-                        <span class="stepper-value" id="subtitleDelayValue">+0.000s</span>
-                        <button class="round-step" id="subtitleDelayPlus" type="button">+</button>
-                      </div>
+                      <button class="round-step subtitle-delay-large-step" id="subtitleDelayMinusLarge" type="button">-0.5s</button>
+                      <button class="round-step" id="subtitleDelayMinus" type="button">-</button>
+
+                      <span class="stepper-value" id="subtitleDelayValue">+0.000s</span>
+
+                      <button class="round-step" id="subtitleDelayPlus" type="button">+</button>
+                      <button class="round-step subtitle-delay-large-step" id="subtitleDelayPlusLarge" type="button">+0.5s</button>
+                    </div>
                       <button class="panel-button" id="subtitleDelayReset" type="button">Reset</button>
                     </div>
                   </div>
