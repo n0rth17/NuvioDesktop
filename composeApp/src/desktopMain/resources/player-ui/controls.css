@@ -2333,6 +2333,27 @@ button:disabled {
   font-variant-numeric: tabular-nums;
 }
 
+.subtitle-delay-input {
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  outline: none;
+  font-family: inherit;
+  appearance: none;
+  cursor: text;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+
+.subtitle-delay-input:hover {
+  background: rgba(255, 255, 255, .09);
+}
+
+.subtitle-delay-input:focus {
+  border-color: rgba(255, 255, 255, .28);
+  background: rgba(255, 255, 255, .10);
+}
+
 .round-step {
   width: 40px;
   height: 40px;

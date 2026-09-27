@@ -648,7 +648,7 @@ const renderParentalGuideRows = warnings => {
 
     const separator = document.createElement("span");
     separator.className = "parental-guide-separator";
-    separator.textContent = " · ";
+    separator.textContent = " Â· ";
 
     const severity = document.createElement("span");
     severity.className = "parental-guide-severity";
@@ -1361,7 +1361,9 @@ const renderSubtitleStylePanel = () => {
   }
   const customStylingEnabled = pendingCustomSubtitleStyling ?? storedCustomStyling;
   subtitleDelayLabel.textContent = state.subtitleDelayLabel || "Subtitle Delay";
-  subtitleDelayValue.textContent = formatDelay(state.subtitleDelayMs);
+  if (document.activeElement !== subtitleDelayValue) {
+    subtitleDelayValue.value = formatDelay(state.subtitleDelayMs);
+  }
   subtitleDelayReset.textContent = state.resetLabel || "Reset";
   autoSyncLabel.textContent = state.autoSyncLabel || "Auto Sync";
   autoSyncReload.textContent = state.reloadSmallLabel || "Reload";
@@ -2714,38 +2716,143 @@ modalElements.forEach(modal => {
   });
 });
 
-subtitleDelayMinusLarge.addEventListener("click", event => {
+function bindRepeatingStepButton(button, value, action = delta => {
+  send("subtitleDelayDelta", delta);
+}) {
+  let holdTimeout = 0;
+  let repeatInterval = 0;
+  let didRepeat = false;
+
+  const stopRepeating = () => {
+    if (holdTimeout) {
+      window.clearTimeout(holdTimeout);
+      holdTimeout = 0;
+    }
+
+    if (repeatInterval) {
+      window.clearInterval(repeatInterval);
+      repeatInterval = 0;
+    }
+  };
+
+  const trigger = () => {
+    action(value);
+  };
+
+  button.addEventListener("pointerdown", event => {
+    if (event.button !== undefined && event.button !== 0) return;
+
+    event.stopPropagation();
+    didRepeat = false;
+
+    stopRepeating();
+
+    holdTimeout = window.setTimeout(() => {
+      didRepeat = true;
+
+      trigger();
+
+      repeatInterval = window.setInterval(() => {
+        trigger();
+      }, 120);
+    }, 450);
+  });
+
+  button.addEventListener("pointerup", event => {
+    event.stopPropagation();
+    stopRepeating();
+  });
+
+  button.addEventListener("pointercancel", stopRepeating);
+  button.addEventListener("pointerleave", stopRepeating);
+
+  button.addEventListener("click", event => {
+    event.stopPropagation();
+
+    if (didRepeat) {
+      didRepeat = false;
+      return;
+    }
+
+    trigger();
+  });
+}
+
+bindRepeatingStepButton(subtitleDelayMinusLarge, -500);
+bindRepeatingStepButton(subtitleDelayMinus, -100);
+bindRepeatingStepButton(subtitleDelayPlus, 100);
+bindRepeatingStepButton(subtitleDelayPlusLarge, 500);
+
+function applyManualSubtitleDelay() {
+  const rawValue = subtitleDelayValue.value
+    .trim()
+    .toLowerCase()
+    .replace(",", ".")
+    .replace(/s$/, "")
+    .trim();
+
+  if (rawValue === "") {
+    subtitleDelayValue.value = formatDelay(state.subtitleDelayMs);
+    return;
+  }
+
+  const seconds = Number(rawValue);
+
+  if (!Number.isFinite(seconds)) {
+    subtitleDelayValue.value = formatDelay(state.subtitleDelayMs);
+    return;
+  }
+
+  const milliseconds = Math.round(seconds * 1000);
+
+  send("subtitleDelaySet", milliseconds);
+}
+
+subtitleDelayValue.addEventListener("click", event => {
   event.stopPropagation();
-  send("subtitleDelayDelta", -500);
 });
 
-subtitleDelayMinus.addEventListener("click", event => {
+subtitleDelayValue.addEventListener("focus", event => {
   event.stopPropagation();
-  send("subtitleDelayDelta", -100);
+
+  const seconds = state.subtitleDelayMs / 1000;
+  subtitleDelayValue.value = String(seconds);
+  subtitleDelayValue.select();
 });
 
-subtitleDelayPlus.addEventListener("click", event => {
+subtitleDelayValue.addEventListener("keydown", event => {
   event.stopPropagation();
-  send("subtitleDelayDelta", 100);
+
+  if (event.key === "Enter") {
+    event.preventDefault();
+    applyManualSubtitleDelay();
+    subtitleDelayValue.blur();
+  } else if (event.key === "Escape") {
+    event.preventDefault();
+    subtitleDelayValue.value = formatDelay(state.subtitleDelayMs);
+    subtitleDelayValue.blur();
+  }
 });
 
-subtitleDelayPlusLarge.addEventListener("click", event => {
-  event.stopPropagation();
-  send("subtitleDelayDelta", 500);
+subtitleDelayValue.addEventListener("blur", () => {
+  applyManualSubtitleDelay();
 });
 
 subtitleDelayReset.addEventListener("click", event => {
   event.stopPropagation();
   send("subtitleDelayReset", 0);
 });
+
 autoSyncReload.addEventListener("click", event => {
   event.stopPropagation();
   send("subtitleAutoSyncReload", 0);
 });
+
 autoSyncCapture.addEventListener("click", event => {
   event.stopPropagation();
   send("subtitleAutoSyncCapture", 0);
 });
+
 customSubtitleStyleToggle.addEventListener("click", event => {
   event.stopPropagation();
   if (pendingCustomSubtitleStyling !== null) return;
@@ -2759,47 +2866,55 @@ customSubtitleStyleToggle.addEventListener("click", event => {
     renderSubtitleStylePanel();
   }, 1500);
 });
-fontSizeMinus.addEventListener("click", event => {
-  event.stopPropagation();
-  send("subtitleFontSizeDelta", -2);
+
+bindRepeatingStepButton(fontSizeMinus, -2, delta => {
+  send("subtitleFontSizeDelta", delta);
 });
-fontSizePlus.addEventListener("click", event => {
-  event.stopPropagation();
-  send("subtitleFontSizeDelta", 2);
+
+bindRepeatingStepButton(fontSizePlus, 2, delta => {
+  send("subtitleFontSizeDelta", delta);
 });
+
 outlineToggle.addEventListener("click", event => {
   event.stopPropagation();
   send("subtitleOutlineToggle", 0);
 });
+
 boldToggle.addEventListener("click", event => {
   event.stopPropagation();
   send("subtitleBoldToggle", 0);
 });
-bottomOffsetMinus.addEventListener("click", event => {
-  event.stopPropagation();
-  send("subtitleBottomOffsetDelta", -5);
+
+bindRepeatingStepButton(bottomOffsetMinus, -5, delta => {
+  send("subtitleBottomOffsetDelta", delta);
 });
-bottomOffsetPlus.addEventListener("click", event => {
-  event.stopPropagation();
-  send("subtitleBottomOffsetDelta", 5);
+
+bindRepeatingStepButton(bottomOffsetPlus, 5, delta => {
+  send("subtitleBottomOffsetDelta", delta);
 });
-textOpacityMinus.addEventListener("click", event => {
-  event.stopPropagation();
+
+bindRepeatingStepButton(textOpacityMinus, -10, delta => {
   const style = state.subtitleStyle || {};
-  const next = Math.max(0, Math.round((parseArgb(style.textColor).alpha / 255) * 100) - 10);
+  const current = Math.round(
+    (parseArgb(style.textColor).alpha / 255) * 100
+  );
+  const next = Math.max(0, Math.min(100, current + delta));
   send("subtitleTextOpacity", next);
 });
-textOpacityPlus.addEventListener("click", event => {
-  event.stopPropagation();
+
+bindRepeatingStepButton(textOpacityPlus, 10, delta => {
   const style = state.subtitleStyle || {};
-  const next = Math.min(100, Math.round((parseArgb(style.textColor).alpha / 255) * 100) + 10);
+  const current = Math.round(
+    (parseArgb(style.textColor).alpha / 255) * 100
+  );
+  const next = Math.max(0, Math.min(100, current + delta));
   send("subtitleTextOpacity", next);
 });
+
 subtitleStyleReset.addEventListener("click", event => {
   event.stopPropagation();
   send("subtitleStyleReset", 0);
 });
-
 sourceReloadButton.addEventListener("click", event => {
   event.stopPropagation();
   send("reloadSources", 0);

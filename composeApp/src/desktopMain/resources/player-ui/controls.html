@@ -278,7 +278,16 @@
                       <button class="round-step subtitle-delay-large-step" id="subtitleDelayMinusLarge" type="button">-0.5s</button>
                       <button class="round-step" id="subtitleDelayMinus" type="button">-</button>
 
-                      <span class="stepper-value" id="subtitleDelayValue">+0.000s</span>
+                      <input
+                        class="stepper-value subtitle-delay-input"
+                        id="subtitleDelayValue"
+                        type="text"
+                        value="+0.000s"
+                        size="7"
+                        inputmode="decimal"
+                        spellcheck="false"
+                        aria-label="Subtitle delay in seconds"
+                      />
 
                       <button class="round-step" id="subtitleDelayPlus" type="button">+</button>
                       <button class="round-step subtitle-delay-large-step" id="subtitleDelayPlusLarge" type="button">+0.5s</button>
